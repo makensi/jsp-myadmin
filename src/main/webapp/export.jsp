@@ -1,55 +1,31 @@
-<%@ page language="java" import="java.sql.*"  pageEncoding="ISO-8859-1"%>
+<%@ page language="java" import="java.sql.*" errorPage="error.jsp" pageEncoding="ISO-8859-1"%>
 <%@ include file="login.jsp"%>
 <%
-String path = request.getContextPath();
-String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
 String db=request.getParameter("db");
 String table=request.getParameter("table");
 %>
+<%@ include file="common/header.jsp"%>
 <%
- 		if (db!=null & db!="")
-	       {
-	       if (table!=null && table!="")
-		       {
-			   PreparedStatement pstm = con.prepareStatement("USE " + db);
-		       pstm.execute();
-		       String s="SELECT * INTO OUTFILE \'c:\\\\" +table+".txt\' FROM " + table;
-		      pstm = con.prepareStatement(s);
-		       pstm.execute();
-		       
-		       out.println("Table : " + table + " outputed to C:\\"+table + ".txt Successfully!");
-		       }
-		       else
-			    {
-			        out.println("Please Select table then click on export");
-			    }
-		       
-	       }
-	    else
-	    {
-	        out.println("Please Select Database then click on export");
-	    }
+if (db!=null && db!="") {
+	if (table!=null && table!="") {
+		PreparedStatement pstm = con.prepareStatement("USE " + db);
+		pstm.execute();
+		String file = System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") +table+".txt";
+		String s="SELECT * INTO OUTFILE \'" + file + "\' FROM " + table;
+		pstm = con.prepareStatement(s);
+		pstm.execute(); %>
 
- %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-  <head>
-    <base href="<%=basePath%>">
-    
-    <title></title>
-     <link href="./default.css" rel="stylesheet" type="text/css"/>
-	<meta http-equiv="pragma" content="no-cache">
-	<meta http-equiv="cache-control" content="no-cache">
-	<meta http-equiv="expires" content="0">    
-	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
-	<meta http-equiv="description" content="This is my page">
-	<!--
-	<link rel="stylesheet" type="text/css" href="styles.css">
-	-->
+		<script type="text/javascript">success.show('Table <%= table %> outputed to <%= file %>.Successfully!');</script>
 
-  </head>
-  
-  <body  bgcolor="#f5f5f5">
+	<% } else { %>
 
-  </body>
-</html>
+		<script type="text/javascript">error.show('Please Select table then click on exportd');</script>
+
+	<% }
+
+} else { %>
+
+	<script type="text/javascript">error.show('Please Select Database then click on export');</script>
+
+<% } %>
+<%@ include file="common/footer.jsp"%>

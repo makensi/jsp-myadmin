@@ -1,215 +1,169 @@
-<%@ page language="java" import="java.sql.*"  pageEncoding="ISO-8859-1"%>
+<%@ page language="java" import="java.sql.*" errorPage="error.jsp" pageEncoding="ISO-8859-1"%>
 <%@ include file="login.jsp"%>
 <%
-String path = request.getContextPath();
-String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+String temp;
+String columnnm;
 String db=request.getParameter("db");
 String alter=request.getParameter("alter");
 String newtblname=request.getParameter("newtblname");
-String temp;
 String newtblfields=request.getParameter("newtblfields");
 DatabaseMetaData dbmd = con.getMetaData();
 int m;
 %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-  <head>
-    <base href="<%=basePath%>">
-    
-    <title></title>
-    
-	<meta http-equiv="pragma" content="no-cache">
-	<meta http-equiv="cache-control" content="no-cache">
-	<meta http-equiv="expires" content="0">    
-	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
-	<meta http-equiv="description" content="This is my page">
-	<!--
-	<link rel="stylesheet" type="text/css" href="styles.css">
-	-->
-	<link rel="stylesheet" type="text/css" href="default.css">
+<%@ include file="common/header.jsp"%>
+<% if (newtblname=="") { %>
+
+	<script>error.show('Please insert table name');</script>
+
+<% } else if (alter!=null && !alter.isEmpty()) { %>
 	
+	<%
+		PreparedStatement pstm1 = con.prepareStatement("USE" + db);
+		ResultSet rst =pstm1.executeQuery();
+		pstm1 = con.prepareStatement("SELECT * FROM "+newtblname);
+		rst= pstm1.executeQuery();
+		ResultSetMetaData rsmd = rst.getMetaData();
+	%>
+
+<div class="row-fluid">
 	
-	
-  </head>
-  
-  <body  bgcolor="#f5f5f5">
-  <%
-	if (newtblname=="")
-	{
-		out.println("<br>");
-		out.println("Please Insert Table Name");
-		out.println("<br>");
-     	out.println("<br>");
-     	out.println("<br>");
-	}
-	else if (alter!="" && alter!=null)
-	{
-	   String columnnm;
-		PreparedStatement pstm1 = con.prepareStatement("USE "+db);
-        ResultSet rst =pstm1.executeQuery();
-        pstm1 = con.prepareStatement("SELECT * FROM "+newtblname);
-        rst= pstm1.executeQuery();
-        ResultSetMetaData rsmd = rst.getMetaData();
-       // for(int i=1;i<=rsmd.getColumnCount(); i++) {
-         //       columnnm=rsmd.getColumnName(i).toString();
-          //      rsmd.getColumnTypeName(i);
-            //    rsmd.getColumnDisplaySize(i);
-                
-                %>
-                
-                <br>
-  				<form action="tabledata.jsp?db=<%=db %>&table=<%=newtblname %>&newtblfields=<%=rsmd.getColumnCount() %>" method="post">
-    			<table style="width: 800px">
-            		<tr>
-               		<td style="width: 10px"></td>
-               		<td style="width: 300px;font-family: Calibri;font-weight: bold; text-align: center; background-color: #d0dce0"> 
-                    	Field</td>
-                		<td style="width: 100px; font-family: Calibri;font-weight: bold;text-align: center; background-color: #d0dce0">
-                    	Type</td>
-                		<td style="width: 100px;font-family: Calibri;font-weight: bold; text-align: center; background-color: #d0dce0">
-                    	Length</td>
-                     	<td style="width: 200px;font-family: Calibri;font-weight: bold; text-align: center; background-color: #d0dce0">
-                         	Constraints</td>
-            			</tr>
-                    	<%
-           
-        				for(m=1; m<=rsmd.getColumnCount(); m++)
-               			{
-               
-    					%>
-    					
-				    	<tr>
-				         
-				         		<td style="width: 10px"></td>
-				                <td style="width: 300px;text-align: left;background-color:#f5f5f5">
-				                    <%temp="row" + m + "col1";%>
-				                    
-				                    <input type="text" name=<%=temp %> style="width: 250px;"  maxlength=<%=dbmd.getMaxColumnNameLength() %> value=<%=rsmd.getColumnName(m)%> >
-				                    </td>
-				                <td style="width: 100px;text-align: left;background-color:#f5f5f5">
-				                 <%temp="row" + m + "col2"; %>
-				                <select name=<%=temp%> > <option selected="selected"><%=rsmd.getColumnTypeName(m).toString()%></option><option>VARCHAR</option><option>DATE</option><option>DATETIME</option><option>TINYINT</option></select>
-				                <td style="width: 100px; text-align: left; background-color:#f5f5f5">
-				                 <%temp="row" + m + "col3";%>
-				                 <input type="text" name=<%=temp%> value=<%=rsmd.getColumnDisplaySize(m)%>>
-				                    </td>
-				                     <td style="width: 100px; text-align: left; background-color:#f5f5f5">
-				                      <%temp="row" + m + "col4";%>
-				                      <select name=<%=temp %> > <option></option><option>PRIMARY KEY</option><option>NULL</option><option>NOT NULL</option></select>
-				                         </td>
-				                    
-				            </tr>
-				            <%
-						    }
-						   %>
-						   
-						   <tr>
-			            	<td style="width: 10"></td>
-			                <td style="width: 300px;font-family: Calibri;font-weight: bold; text-align: center; background-color: #d0dce0">
-			                   &nbsp;</td>
-			                <td style="width: 100px; font-family: Calibri;font-weight: bold;text-align: center; background-color: #d0dce0">
-			                   &nbsp; </td>
-			                <td style="width: 100px;font-family: Calibri;font-weight: bold; text-align: center; background-color: #d0dce0">
-			                    &nbsp;</td>
-			                     <td style="width: 200px;font-family: Calibri;font-weight: bold; text-align: center; background-color: #d0dce0">
-			                         &nbsp;</td>
-			                     
-			            </tr>
-							</table>
-							<br>
-							&nbsp;&nbsp;&nbsp;<input type="submit" value="Alter" name="create">
-							</form>
-            
-                    <%  
-             //   }
-	}
-	else if (newtblfields.length() == 0 )
-	{
-		out.println("<br>");
-	    out.println("Please Insert Table Fields");
-	    out.println("<br>");
-     	out.println("<br>");
-     	out.println("<br>");
-	}
-	else if (Integer.parseInt(newtblfields) > dbmd.getMaxColumnsInTable() )
-	{
-		out.println("<br>");
-	    out.println("Please Enter Column No. Less than " + dbmd.getMaxColumnsInTable());
-	    out.println("<br>");
-     	out.println("<br>");
-     	out.println("<br>");
-	}
-	else
-	{
- %>
-			 <br>
-			  <form action="tabledata.jsp?db=<%=db %>&table=<%=newtblname %>&newtblfields=<%=newtblfields %>" method="post">
-			    <table style="width: 800px">
-            <tr>
-               <td style="width: 10px"></td>
-                <td style="width: 300px;font-family: Calibri;font-weight: bold; text-align: center; background-color: #d0dce0"> 
-                    Field</td>
-                <td style="width: 100px; font-family: Calibri;font-weight: bold;text-align: center; background-color: #d0dce0">
-                    Type</td>
-                <td style="width: 100px;font-family: Calibri;font-weight: bold; text-align: center; background-color: #d0dce0">
-                    Length</td>
-                     <td style="width: 200px;font-family: Calibri;font-weight: bold; text-align: center; background-color: #d0dce0">
-                         Constraints</td>
-            </tr>
-            
-           
-      
-		         <%
-		           
-		        for(m=1; m<=Integer.parseInt(newtblfields); m++)
-		               {
-		               
-		    %>
-    
-      
-         <tr>
-         
-         		<td style="width: 10px"></td>
-                <td style="width: 300px;text-align: left;background-color:#f5f5f5">
-                    <%temp="row" + m + "col1";%>
-                    
-                    <input type="text" name=<%=temp %> style="width: 250px;"  maxlength=<%=dbmd.getMaxColumnNameLength() %> >
-                    </td>
-                <td style="width: 100px;text-align: left;background-color:#f5f5f5">
-                 <%temp="row" + m + "col2"; %>
-                <select name=<%=temp%>> <option>VARCHAR</option><option>DATE</option><option>DATETIME</option><option>TINYINT</option></select>
-                <td style="width: 100px; text-align: left; background-color:#f5f5f5">
-                 <%temp="row" + m + "col3";%>
-                 <input type="text" name=<%=temp%>>
-                    </td>
-                     <td style="width: 100px; text-align: left; background-color:#f5f5f5">
-                      <%temp="row" + m + "col4";%>
-                      <select name=<%=temp %> > <option></option><option>PRIMARY KEY</option><option>NULL</option><option>NOT NULL</option></select>
-                         </td>
-                    
-            </tr>
-			      <%
-			    }
-			   %>
-			  				
-            <tr>
-            	<td style="width: 10"></td>
-                <td style="width: 300px;font-family: Calibri;font-weight: bold; text-align: center; background-color: #d0dce0">
-                   &nbsp;</td>
-                <td style="width: 100px; font-family: Calibri;font-weight: bold;text-align: center; background-color: #d0dce0">
-                   &nbsp; </td>
-                <td style="width: 100px;font-family: Calibri;font-weight: bold; text-align: center; background-color: #d0dce0">
-                    &nbsp;</td>
-                     <td style="width: 200px;font-family: Calibri;font-weight: bold; text-align: center; background-color: #d0dce0">
-                         &nbsp;</td>
-                     
-			            </tr>
+	<div class="span12">
+
+		<form action="tabledata.jsp?db=<%=db %>&table=<%=newtblname %>&newtblfields=<%=rsmd.getColumnCount() %>" method="post" class="form-horizontal">
+
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Field</th>
+						<th>Type</th>
+						<th>Length</th>
+						<th>Constraints</th>
+					</tr>
+				</thead>
+				<tbody>
+				<% for(m=1; m<=rsmd.getColumnCount(); m++) { %>
+
+					<tr>
+						<td><%= m %></td>
+						<%temp="row" + m + "col1";%>
+						<td>
+							<input type="text" name="<%= temp %>" maxlength="<%= dbmd.getMaxColumnNameLength() %>" value="<%=rsmd.getColumnName(m)%>">
+						</td>
+						<%temp="row" + m + "col2";%>
+						<td>
+							<select name="<%= temp %>"> 
+								<option selected="selected"><%=rsmd.getColumnTypeName(m).toString()%></option>
+								<option>VARCHAR</option>
+								<option>DATE</option>
+								<option>TINYINT</option>
+							</select>
+						</td>
+						<%temp="row" + m + "col3";%>
+						<td>
+							<input type="text" name="<%=temp%>" value="<%=rsmd.getColumnDisplaySize(m)%>">
+						</td>
+						<%temp="row" + m + "col4";%>
+						<td>
+							<select name="<%= temp %>">
+								<option>Select one</option>
+								<option>PRIMARY KEY</option>
+								<option>NULL</option>
+								<option>NOT NULL</option>
+							</select>
+						</td>
+
+					</tr>
+
+				<% } %>
+				</tbody>
 			</table>
-			<br>
-			&nbsp;&nbsp;&nbsp;<input type="submit" value="Create" name="create">
-			</form>
-<%
-}
- %>
-  </body>
-</html>
+
+			<div class="text-right">
+				<button type="submit" name="create" class="btn btn-primary">
+					<i class="icon-random icon-white"></i> Alter
+				</button>
+			</div>
+
+		</form>
+
+	</div>
+
+</div>
+
+<% } else if (newtblfields.length() == 0 ) { %>
+
+	<script>error.show('Please insert table fields');</script>
+
+<% } else if (Integer.parseInt(newtblfields) > dbmd.getMaxColumnsInTable() ) { %>
+
+	<script>error.show('Please enter column no. less than <%= dbmd.getMaxColumnsInTable() %>');</script>
+
+<% } else { %>
+
+<div class="row-fluid">
+	
+	<div class="span12">
+
+		<form action="tabledata.jsp?db=<%=db %>&table=<%=newtblname %>&newtblfields=<%=newtblfields %>" method="post" class="form-horizontal">
+
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<td>#</td>
+						<td>Field</td>
+						<td>Type</td>
+						<td>Length</td>
+						<td>Constraints</td>
+					</tr>
+				</thead>
+				<tbody>
+				<% for(m=1; m<=Integer.parseInt(newtblfields); m++) { %>
+
+					<tr>
+					<td><%= m %></td>
+					<%temp="row" + m + "col1";%>
+					<td>
+						<input type="text" name="<%=temp %>" maxlength="<%=dbmd.getMaxColumnNameLength() %>">
+					</td>
+					<%temp="row" + m + "col2"; %>	
+					<td >
+						<select name="<%=temp%>">
+							<option>VARCHAR</option>
+							<option>DATE</option>
+							<option>TINYINT</option>
+						</select>
+					</td>
+					<%temp="row" + m + "col3";%>
+					<td>
+						<input type="text" name="<%= temp %>">
+					</td>
+					<%temp="row" + m + "col4";%>
+					<td>
+						<select name="<%=temp %>">
+							<option>Select one</option>
+							<option>PRIMARY KEY</option>
+							<option>NULL</option>
+							<option>NOT NULL</option>
+						</select>
+					</td>
+
+					</tr>
+				<% } %>
+			</table>
+
+			<div class="text-right">
+				<button type="submit" name="create" class="btn btn-primary">
+					<i class="icon-plus icon-white"></i> Create
+				</button>
+			</div>
+
+		</form>
+
+	</div>
+
+</div>
+
+<% } %>
+
+<%@ include file="common/footer.jsp"%>

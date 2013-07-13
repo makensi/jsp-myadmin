@@ -1,82 +1,76 @@
-<%@ page language="java" import="java.sql.*" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" import="java.sql.*" errorPage="error.jsp" pageEncoding="ISO-8859-1"%>
 <%@ include file="login.jsp"%>
 <%
-String path = request.getContextPath();
-String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
 String user=request.getParameter("user");
 String pass=request.getParameter("pass");
-
- DatabaseMetaData dbmd = con.getMetaData();
+DatabaseMetaData dbmd = con.getMetaData();
 %>
+<%@ include file="common/header.jsp"%>
+<% if (user!=null && pass!=null && !user.isEmpty() && !pass.isEmpty()){ %>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-  <head>
-    <base href="<%=basePath%>">
-    
-    <title></title>
-    <link href="./default.css" rel="stylesheet" type="text/css"/>
-	<meta http-equiv="pragma" content="no-cache">
-	<meta http-equiv="cache-control" content="no-cache">
-	<meta http-equiv="expires" content="0">    
-	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
-	<meta http-equiv="description" content="This is my page">
-	<!--
-	<link rel="stylesheet" type="text/css" href="styles.css">
-	-->
-	<script language="javascript">
-				function validate(objForm){
-					
-					
-					if(objForm.user.value.length==0){
-					alert("Please enter User Name!");
-						objForm.user.focus();
-						return false;
-					}
-					if(objForm.pass.value.length==0){
-					alert("Please enter Password!");
-						objForm.pass.focus();
-						return false;
-					}
-					}
-	</script>
-  </head>
-  
-  <body  bgcolor="#f5f5f5">
-  <%
-		 if (user!=null && user !="")
-		{
-			if (pass!=null && pass!="")
-			{
+	<%
+		PreparedStatement pstm = con.prepareStatement("USE mysql");
+		pstm.execute();
+		pstm = con.prepareStatement("CREATE USER '"+ user + "'@'" + session.getAttribute("host") + "'");
+		pstm.executeUpdate();
+		pstm = con.prepareStatement("GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON *.* TO "+ user + "@'%' IDENTIFIED BY '" + pass+ "'");
+		pstm.execute();
+		pstm = con.prepareStatement("FLUSH PRIVILEGES");
+		pstm.execute();
+	%>
+	
+	<script>success.show('User <%= user %> created successfully with connect and resource grant!');</script>
 
-				PreparedStatement pstm = con.prepareStatement("USE mysql");
-	       		pstm.execute();
-				pstm = con.prepareStatement("INSERT INTO user (Host,User,Password) VALUES('%','"+ user + "',PASSWORD('" + pass+ "'))");
-				pstm.executeUpdate();
-				
-				pstm = con.prepareStatement("GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON *.* TO "+ user + "@'%' IDENTIFIED BY '" + pass+ "'");
-				pstm.execute();
-				pstm = con.prepareStatement("FLUSH PRIVILEGES");
-				pstm.execute();
-				out.println("User : " + user + " created Successfully with Connect And Resource Grant!");
-			}
+<% } else { %>
+
+	<fieldset class="span2">
+
+		<legend>New user</legend>
+
+		<span class="help-block">Enter username and password (Note: User will be given Select, Insert, Update, Delete, Create And Drop Grant Automatically)</span>
+
+		<form action="createuser.jsp" name="createuser" method="post" class="form-horizontal">
+			<div class="control-group">
+				<label for="" class="control-label">Username</label>
+				<div class="controls">
+					<input type="text" name="user" maxlength="<%=dbmd.getMaxUserNameLength() %>">
+				</div>
+			</div>
+			<div class="control-group">
+				<label for="" class="control-label">Password</label>
+				<div class="controls">
+					<input type="password" name="pass">
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls text-right">
+					<button type="submit" name="create" class="btn btn-primary">
+						<i class="icon-plus icon-white"></i> Create
+					</button>
+				</div>
+			</div>
+		</form>
+
+	</fieldset>
+
+<% } %>
+
+<script language="javascript">
+	$('form[name="createuser"]').bind('submit', function validate(event){
+		var form = event.target,
+			result = true;
+		if(form.user.value.length==0){
+			error.show("Please enter user name!");
+			form.user.focus();
+			result = false;
 		}
-        else
-        {
-  
-   %>
-   <form action="createuser.jsp" method="post" onSubmit="return validate(this)">
-   <br>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-   Enter Username and Password (Note: User will be given Select, Insert, Update, Delete, Create And Drop Grant Automatically<br>
-   <br>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-   Username&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Password<br>&nbsp;
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="user" maxlength=<%=dbmd.getMaxUserNameLength() %> >&nbsp;&nbsp;&nbsp;
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="password" name="pass">
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="Create" name="create">
-   <%
-   }
-    %>
-  </body>
-</html>
+		if(form.pass.value.length==0){
+			error.show("Please enter password!");
+			form.pass.focus();
+			result = false;
+		}
+		return result;
+	});
+</script>
+
+<%@ include file="common/footer.jsp"%>

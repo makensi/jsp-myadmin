@@ -1,41 +1,119 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-    
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<script language="javascript" src="confirm.js" type="text/javascript"></script>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<link href="./default.css" rel="stylesheet" type="text/css"/>
+<%
+String[] uriSplitted = request.getRequestURI().split("/");
+String uri = uriSplitted[uriSplitted.length-1];
+boolean isTable = (request.getParameter("table")!=null && !request.getParameter("table").isEmpty());
+String tableName = "";
+if(isTable){
+	tableName = request.getParameter("table");
+} 
+%>
+<div class="span12">
+	<ul class="breadcrumb">
+		<li>
+			<a href="welcome.jsp">Server: <%= request.getParameter("server") %></a>
+			<i class="icon-chevron-right"></i>
+		</li>
+		<li <%= isTable ? "" : "class=\"active\"" %>>
+			<a href="right.jsp?server=<%=request.getParameter("server")%>&db=<%=request.getParameter("db") %>">	Database: <%= request.getParameter("db") %>
+			</a>
+			<% if(isTable) { %>
+				<i class="icon-chevron-right"></i>
+			<% } %>
+		</li>
+		<% if (isTable) { %>
+		<li class="active">
+			<a href="tabledata.jsp?server=<%=request.getParameter("server")%>&db=<%=request.getParameter("db") %>&table=<%=request.getParameter("table") %>">
+				Table: <%= request.getParameter("table") %>
+			</a>
+		</li>
+		<% } %>
+	</ul>
+</div>
 
-</head>
-<body bgcolor="#f5f5f5">
+<div class="span12">
+	<ul class="nav nav-tabs">
+		<li class="<%= uri.equals("right.jsp")? "active" : "" %>">
+			<a href="right.jsp?server=<%=request.getParameter("server")%>&db=<%=request.getParameter("db")%>">
+				Structure
+			</a>
+		</li>
+		<li class="<%= uri.equals("query.jsp")? "active" : "" %>">
+			<a href="query.jsp?server=<%=request.getParameter("server")%>&db=<%=request.getParameter("db")%>">
+				Query
+			</a>
+		</li>
+		<li class="<%= uri.equals("tabledata.jsp")? "active" : "" %>">
+			<a href="tabledata.jsp?server=localhost&db=mysql&table=user">
+				<%= !tableName.isEmpty() && !tableName.equals("user")  ? "Data" : "Privileges" %>
+			</a>
+		</li>
+		<li class="dropdown">
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				More options <b class="caret"></b>
+			</a>
+			<ul class="dropdown-menu">
+				<% if (isTable){ %>
+					<script type="text/javascript">
+						function dTable(url){
+							var retcode = true;
+							retcode = confirm('Are you sure, you want to delete the table with all the data?');
+							
+							if (retcode) {
+							    window.location.href = url;
+							}
+						}
 
-<form>
-<a href="welcome.jsp">Server : <% out.println(request.getParameter("server"));%></a>&nbsp;&nbsp;&nbsp;&nbsp;<img class="icon" src="./Images/arrow.png" alt="-" width="5" height="9">&nbsp;&nbsp;&nbsp;&nbsp;<a href="right.jsp?server=<%=request.getParameter("server")%>&db=<%=request.getParameter("db") %>">Database : <% out.println(request.getParameter("db"));%></a>
-<%if (request.getParameter("table")!=null && request.getParameter("table")!=""){%>
-&nbsp;&nbsp;&nbsp;&nbsp;<img class="icon" src="./Images/arrow.png" alt="-" width="5" height="9">&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="tabledata.jsp?server=<%=request.getParameter("server")%>&db=<%=request.getParameter("db") %>&table=<%=request.getParameter("table") %>">Table : <% out.println(request.getParameter("table"));%></a>
-<%}%>
+						function dData(url){
+							var retcode = true;
+							retcode = confirm('Are you sure, you want to delete all the data in table?');
 
-                <div id="tabs1">
-                        <ul>
-                                <!-- CSS Tabs -->
-<li id="current"><a href="right.jsp?server=<%=request.getParameter("server")%>&db=<%=request.getParameter("db")%>"><span>Structure</span></a></li>
-<!-- <li><a href="welcome.jsp"><span>Search</span></a></li> -->
-<li><a href="query.jsp?server=<%=request.getParameter("server")%>&db=<%=request.getParameter("db")%>"><span>Query</span></a></li>
-<li><a href="tabledata.jsp?server=localhost&db=mysql&table=user"><span>Privileges</span></a></li>
+							if (retcode) {
+							    window.location.href = url;
+							}
+						}
 
-<%if (request.getParameter("table")!=null && request.getParameter("table")!=""){%>
-<li><a href="export.jsp?db=<%=request.getParameter("db")%>&table=<%=request.getParameter("table")%>"><span>Export</span></a></li>
-<li><a href="javascript:dData('drop.jsp?db=<%=request.getParameter("db")%>&table=<%=request.getParameter("table")%>&empty=yes')" target="jspmain"><span>Drop Data in <%=request.getParameter("table")%></span></a></li>
-<li><a href="javascript:dTable('drop.jsp?db=<%=request.getParameter("db")%>&table=<%=request.getParameter("table")%>')" target="jspmain"><span>Drop Data and Table <%=request.getParameter("table")%></span></a></li>
-<%} else { %>
-<li><a href="javascript:dDatabase('drop.jsp?db=<%=request.getParameter("db")%>')" target="jspmain"><span>Drop Database <%=request.getParameter("db")%></span></a></li>
-<%}%>
+						function dRecord(url){
+							var retcode = true;
+							retcode = confirm('Are you sure, you want to delete the record?');
 
-                        </ul>
-                </div>
-</form>
-</body>
-</html>
+							if (retcode {
+							    window.location.href = url;
+							}
+						}
+					</script>
+					<li>
+						<a href="export.jsp?db=<%=request.getParameter("db")%>&table=<%=request.getParameter("table")%>">
+							Export
+						</a>
+					</li>
+					<li>
+						<a href="javascript:dData('drop.jsp?db=<%=request.getParameter("db")%>&table=<%=request.getParameter("table")%>&empty=yes')" target="jspmain">
+							Drop data in <%=request.getParameter("table")%>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:dTable('drop.jsp?db=<%=request.getParameter("db")%>&table=<%=request.getParameter("table")%>')" target="jspmain">
+							Drop data and table <%=request.getParameter("table")%>
+						</a>
+					</li>
+				<% } else { %>
+					<script type="text/javascript">
+						function dDatabase(url){
+							var retcode = true;
+							retcode = confirm('Are you sure, you want to delete the database?');
+
+							if (retcode) {
+							   window.location.href = url;
+							}
+						}
+					</script>
+					<li>
+						<a href="javascript:dDatabase('drop.jsp?db=<%=request.getParameter("db")%>')" target="jspmain">
+							Drop database <%=request.getParameter("db")%>
+						</a>
+					</li>
+				<% } %>
+			</li>
+		</li>
+	</ul>
+</div>

@@ -1,86 +1,75 @@
-<%@ page language="java" import="java.sql.*" pageEncoding="ISO-8859-1"%>
- <%@ include file="login.jsp"%>
+<%@ page language="java" import="java.sql.*" errorPage="error.jsp" pageEncoding="ISO-8859-1"%>
+<%@ include file="login.jsp"%>
+<%@ include file="common/header.jsp"%>
 <%
-String path = request.getContextPath();
-String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
 String newdbname=request.getParameter("newdbname");
 String mknewdb=request.getParameter("mknewdb");
+%>
+<% if (newdbname == null || newdbname.isEmpty()) { %>
 
+	<script>error.show('Please Insert Database Name');</script>
 
- %>
- 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-  <head>
-    <base href="<%=basePath%>">
-    
-    <title></title>
-    
-	<meta http-equiv="pragma" content="no-cache">
-	<meta http-equiv="cache-control" content="no-cache">
-	<meta http-equiv="expires" content="0">    
-	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
-	<meta http-equiv="description" content="This is my page">
-	<link rel="stylesheet" type="text/css" href="default.css">
+<% } else if (newdbname!=null) { %>
+	
+	<%
+		PreparedStatement pstm = con.prepareStatement("CREATE DATABASE " + newdbname);
+		pstm.execute();
+	%>
+	<script>success.show('Database <%= newdbname %> created Successfully!');</script>
 
+<div class="row-fluid">
+
+	<div class="span2 offset4">
+		<fieldset>
+			<legend>Create new table</legend>
+
+			<form name="createtable" action="createtbl.jsp?db=<%=newdbname %>" method="post" class="form-horizontal">
+
+				<div class="control-group">
+					<label class="control-label" for="newtblname">Name</label>
+					<div class="controls">
+						<input type="text" name="newtblname" placeholder="Table name">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="newtblfields">Number of columns</label>
+					<div class="controls">
+						<input type="number" name="newtblfields" placeholder="Number of columns">
+					</div>
+				</div>
+				<div class="control-group text-right">
+					<button type="submit" name="create" class="btn btn-primary">
+						<i class="icon-plus icon-white"></i> Create
+					</button>
+				</div>
+
+			</form>
+
+		</fieldset>
+	</div>
+
+</div>
+
+<% } %>
 
 <script language="javascript">
-  <!--
-	 function IsNumeric(strString) //  check for valid numeric strings	
-     {
-     	if(!/\D/.test(strString)) return true;
-     	else return false;
-    }
-    function validate(objForm){
-		    if (objForm.newtblfields.value.length == 0) 
-		      {
-		      alert("Please Enter No. of Table Columns");
-		      return false;
-		      } 
-		   else if (IsNumeric(objForm.newtblfields.value) == false) 
-		      {
-		      alert("Invalid No. of Table Columns!");
-		      return false;
-		      }
-      }
-	</script>
-  </head>
-  
-  <body  bgcolor="#f5f5f5"><br>
-  
-  <%
-	// if (mknewdb=="1")
-     //{
- 		//out.println("Please ");
-	  //}
-    if (newdbname=="")
-    {
-     out.println("<br>");
-     out.println("Please Insert Database Name");
-     out.println("<br>");
-     out.println("<br>");
-     out.println("<br>");
-     
+	//  check for valid numeric strings	
+	function isNumeric(value) {
+		return (!/\D/.test(value));
 	}
-	else if (newdbname!=null)
-	{
-	   PreparedStatement pstm = con.prepareStatement("CREATE DATABASE " + newdbname);
-       pstm.execute();
-       out.println("Database : " + newdbname +" Created Successfully!");
-       
-       
-	
-  %>
-  
-  
-  <form action="createtbl.jsp?db=<%=newdbname %>" method="post" onSubmit="return validate(this)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
-     
-     <img class="icon" src="./Images/arrow.png" alt="-" width="5" height="9"> Create New Table<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name <input type="text" name="newtblname">&nbsp; No. of Fields&nbsp; <input type="text" name="newtblfields"> &nbsp; 
-	 <input type="submit" value="Create" name="create">
-	 
-	 </form>
-	 <%
-	 }
-	  %>
-  </body>
-</html>
+
+	$('form[name="createtable"]').bind('submit', function validate(event){
+		var form = event.target,
+			result = true;
+		if (form.newtblfields.value.length == 0) {
+			error.show("Please enter No. of columns");
+			result = false;
+		} else if (isNumeric(form.newtblfields.value) == false) {
+			error.show("Invalid No. of columns!");
+			result = false;
+		}
+		return result;
+	});
+</script>
+
+<%@ include file="common/footer.jsp"%>
