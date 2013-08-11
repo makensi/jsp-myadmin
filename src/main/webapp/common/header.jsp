@@ -9,11 +9,17 @@
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	
-	<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-	<link href="css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css"/>
+	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+	<!-- fix for datatables -->
+	<link href="css/datatables.bootstrap.css" rel="stylesheet">
 	
-	<script src="js/jquery-2.0.3.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+	<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+	<!-- fix for datatables -->
+	<script src="js/datatables.bootstrap.js"></script>
 	
 	<script type="text/javascript">
 		var errors,
