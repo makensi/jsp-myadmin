@@ -81,7 +81,13 @@ ResultSetMetaData rsmd = null;
 			pstm1 = con.prepareStatement(query1);
 		}
 
-		if(query1 != null && ( query1.contains("INSERT INTO") || query1.contains("DELETE FROM") || query1.contains("UPDATE ") )){
+		boolean isUpdate = false;
+		if(query1 != null) {
+			String filteredQuery = query1.trim().toLowerCase();
+			isUpdate = filteredQuery.startsWith("insert") || filteredQuery.startsWith("delete") || filteredQuery.startsWith("update");
+		}
+
+		if(isUpdate) {
 			modifiedRows = pstm1.executeUpdate();
 		} else {
 			rst= pstm1.executeQuery();
