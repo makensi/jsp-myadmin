@@ -74,10 +74,10 @@ while (rst.next()) {
 							<a href="createtbl.jsp?newtblname=<%=localtable %>&db=<%=db %>&alter=yes" class="btn" title="Alter table">
 								<i class="icon-wrench" title="Alter table"></i>
 							</a>
-							<a href="drop.jsp?table=<%=localtable %>&db=<%=db %>&empty=yes" class="btn" title="Truncate">
+							<a href="javascript:dData('drop.jsp?table=<%=localtable %>&db=<%=db %>&empty=yes')" class="btn" title="Truncate">
 								<i class="icon-trash" title="Truncate table"></i>
 							</a>
-							<a href="drop.jsp?table=<%=localtable %>&db=<%=db %>" class="btn" title="Drop table">
+							<a href="javascript:dTable('drop.jsp?table=<%=localtable %>&db=<%=db %>')" class="btn" title="Drop table">
 								<i class="icon-remove" title="Drop table"></i>
 							</a>
 
